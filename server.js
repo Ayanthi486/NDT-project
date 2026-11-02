@@ -49,10 +49,13 @@ app.use(session({
 // Initialize database tables
 initDb();
 
-// Share session admin state and flash message alerts with all views
+// Share session admin/user state and flash message alerts with all views
 app.use((req, res, next) => {
   res.locals.isAdmin = req.session.isAdmin || false;
   res.locals.adminUser = req.session.adminUser || null;
+  res.locals.isUser = req.session.isUser || false;
+  res.locals.userId = req.session.userId || null;
+  res.locals.currentUser = req.session.currentUser || null;
   res.locals.success_msg = req.session.success_msg || null;
   res.locals.error_msg = req.session.error_msg || null;
   
@@ -160,7 +163,60 @@ app.get('/notices', async (req, res) => {
   }
 });
 
-// 4. Register Profile Form Route
+// 4. User Login & Registration Routes
+app.get('/login', (req, res) => {
+  if (req.session.isUser && req.session.userId) {
+    return res.redirect(`/profile/${req.session.userId}`);
+  }
+  res.render('login');
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const identifier = (req.body.identifier || '').trim();
+    const password = (req.body.password || '').trim();
+
+    if (!identifier || !password) {
+      req.session.error_msg = 'Please enter both your Serial Number/Email and Password.';
+      return res.redirect('/login');
+    }
+
+    const alumnus = await dbGet(
+      `SELECT * FROM alumni WHERE (LOWER(serial_number) = LOWER(?) OR LOWER(email) = LOWER(?)) AND status != 'rejected'`,
+      [identifier, identifier]
+    );
+
+    if (alumnus && bcrypt.compareSync(password, alumnus.password_hash)) {
+      req.session.isUser = true;
+      req.session.userId = alumnus.id;
+      req.session.currentUser = alumnus;
+      req.session.success_msg = `Welcome back, ${alumnus.name}!`;
+      return res.redirect(`/profile/${alumnus.id}`);
+    } else {
+      req.session.error_msg = 'Invalid Serial Number / Email or Password. Please try again.';
+      return res.redirect('/login');
+    }
+  } catch (error) {
+    console.error(error);
+    req.session.error_msg = 'An error occurred during login. Please try again.';
+    res.redirect('/login');
+  }
+});
+
+app.get('/logout', (req, res) => {
+  delete req.session.isUser;
+  delete req.session.userId;
+  delete req.session.currentUser;
+  req.session.success_msg = 'You have logged out successfully.';
+  res.redirect('/login');
+});
+
+// Register alias
+app.get('/register', (req, res) => {
+  res.redirect('/profile/new');
+});
+
+// Register Profile Form Route
 app.get('/profile/new', (req, res) => {
   res.render('register', { isEdit: false });
 });
@@ -177,9 +233,9 @@ app.post('/profile/new', upload.single('profile_pic'), async (req, res) => {
     }
 
     // Check if Serial Number already exists
-    const existing = await dbGet(`SELECT id FROM alumni WHERE serial_number = ?`, [serial_number]);
+    const existing = await dbGet(`SELECT id FROM alumni WHERE LOWER(serial_number) = LOWER(?)`, [serial_number.trim()]);
     if (existing) {
-      req.session.error_msg = `The Serial Number "${serial_number}" is already registered. If this is yours, please edit your existing profile.`;
+      req.session.error_msg = `The Serial Number "${serial_number}" is already registered. If this is yours, please log in or edit your profile.`;
       return res.redirect('/profile/new');
     }
 
@@ -191,13 +247,21 @@ app.post('/profile/new', upload.single('profile_pic'), async (req, res) => {
     const profile_pic = req.file ? req.file.filename : null;
 
     // Save profile to database (status: 'approved')
-    await dbRun(`
+    const result = await dbRun(`
       INSERT INTO alumni (name, batch, serial_number, card_number, field_of_study, email, phone, current_job, company, linkedin, profile_pic, password_hash, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved')
-    `, [name, parseInt(batch), serial_number, card_number, field_of_study, email, phone, current_job, company, linkedin, profile_pic, password_hash]);
+    `, [name.trim(), parseInt(batch), serial_number.trim(), card_number ? card_number.trim() : null, field_of_study.trim(), email ? email.trim() : null, phone ? phone.trim() : null, current_job ? current_job.trim() : null, company ? company.trim() : null, linkedin ? linkedin.trim() : null, profile_pic, password_hash]);
 
-    req.session.success_msg = 'Your profile has been registered successfully! You can now view and search it in the directory.';
-    res.redirect('/directory');
+    const newId = result.lastID;
+    const newAlumnus = await dbGet(`SELECT * FROM alumni WHERE id = ?`, [newId]);
+
+    // Automatically log in the newcomer
+    req.session.isUser = true;
+    req.session.userId = newId;
+    req.session.currentUser = newAlumnus;
+
+    req.session.success_msg = `Welcome to NDT අපි, ${name}! Your profile has been created successfully.`;
+    res.redirect(`/profile/${newId}`);
   } catch (error) {
     console.error(error);
     req.session.error_msg = 'An error occurred during registration. Please try again.';
@@ -252,11 +316,14 @@ app.post('/profile/edit/:id', upload.single('profile_pic'), async (req, res) => 
       return res.redirect('/directory');
     }
 
-    // Validate Password
-    const passwordMatch = bcrypt.compareSync(password, alumnus.password_hash);
-    if (!passwordMatch) {
-      req.session.error_msg = 'Invalid password. You must provide the correct password chosen at registration to save changes.';
-      return res.redirect(`/profile/edit/${alumnusId}`);
+    // Validate authorization (either logged in as this profile, admin, or correct password provided)
+    const isOwner = (req.session.isUser && req.session.userId === parseInt(alumnusId)) || req.session.isAdmin;
+    if (!isOwner) {
+      const passwordMatch = password && bcrypt.compareSync(password, alumnus.password_hash);
+      if (!passwordMatch) {
+        req.session.error_msg = 'Invalid password. You must provide the correct password chosen at registration to save changes.';
+        return res.redirect(`/profile/edit/${alumnusId}`);
+      }
     }
 
     // Pic update setup
@@ -278,6 +345,10 @@ app.post('/profile/edit/:id', upload.single('profile_pic'), async (req, res) => 
       SET name = ?, batch = ?, card_number = ?, field_of_study = ?, email = ?, phone = ?, current_job = ?, company = ?, linkedin = ?, profile_pic = ?
       WHERE id = ?
     `, [name, parseInt(batch), card_number, field_of_study, email, phone, current_job, company, linkedin, profile_pic, alumnusId]);
+
+    if (req.session.isUser && req.session.userId === parseInt(alumnusId)) {
+      req.session.currentUser = await dbGet(`SELECT * FROM alumni WHERE id = ?`, [alumnusId]);
+    }
 
     req.session.success_msg = 'Profile updated successfully!';
     res.redirect(`/profile/${alumnusId}`);

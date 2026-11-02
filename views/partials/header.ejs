@@ -56,12 +56,33 @@
         </div>
 
         <!-- Desktop Navigation Menu -->
-        <div class="hidden md:flex space-x-6 items-center">
-          <a href="/" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-house"></i> Home</a>
-          <a href="/directory" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-users"></i> Directory</a>
-          <a href="/notices" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Notices</a>
-          <a href="/profile/new" class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Join NDT අපි</a>
-          <a href="/admin" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1"><i class="fa-solid fa-lock"></i> Admin</a>
+        <div class="hidden md:flex space-x-5 items-center">
+          <a href="/" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1.5"><i class="fa-solid fa-house"></i> Home</a>
+          <a href="/directory" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1.5"><i class="fa-solid fa-users"></i> Directory</a>
+          <a href="/notices" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1.5"><i class="fa-solid fa-bullhorn"></i> Notices</a>
+
+          <% if (locals.isUser && locals.currentUser) { %>
+            <!-- User is Logged In -->
+            <a href="/profile/<%= locals.userId %>" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-bold transition-colors flex items-center gap-2 bg-blue-950/60 border border-blue-800">
+              <i class="fa-solid fa-user-circle text-ndtGold text-base"></i>
+              <span><%= locals.currentUser.name ? locals.currentUser.name.split(' ')[0] : 'My Profile' %></span>
+            </a>
+            <a href="/logout" class="bg-red-900/60 hover:bg-red-800 text-red-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-red-700/50 flex items-center gap-1.5">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+          <% } else { %>
+            <!-- User is Not Logged In -->
+            <a href="/login" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1.5">
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </a>
+            <a href="/register" class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-4 py-2 rounded-lg text-sm font-extrabold transition-all shadow-md flex items-center gap-1.5">
+              <i class="fa-solid fa-user-plus"></i> Register
+            </a>
+          <% } %>
+
+          <a href="/admin" class="text-slate-300 hover:text-white px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1 border border-slate-700/60 ml-2">
+            <i class="fa-solid fa-shield-halved"></i> Admin
+          </a>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -79,8 +100,20 @@
         <a href="/" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-house"></i> Home</a>
         <a href="/directory" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-users"></i> Directory</a>
         <a href="/notices" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Notices</a>
-        <a href="/profile/new" class="block bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-3 py-2 rounded-md text-base font-bold text-center flex items-center justify-center gap-2"><i class="fa-solid fa-user-plus"></i> Join NDT අපි</a>
-        <a href="/admin" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold text-slate-300 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Admin</a>
+
+        <% if (locals.isUser && locals.currentUser) { %>
+          <a href="/profile/<%= locals.userId %>" class="block bg-blue-950 px-3 py-2 rounded-md text-base font-bold flex items-center gap-2 text-ndtGold">
+            <i class="fa-solid fa-user-circle"></i> My Profile (<%= locals.currentUser.name %>)
+          </a>
+          <a href="/logout" class="block hover:bg-red-900 text-red-200 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </a>
+        <% } else { %>
+          <a href="/login" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+          <a href="/register" class="block bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-3 py-2 rounded-md text-base font-bold text-center flex items-center justify-center gap-2"><i class="fa-solid fa-user-plus"></i> Register Profile</a>
+        <% } %>
+
+        <a href="/admin" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold text-slate-300 flex items-center gap-2 border-t border-blue-900/50 pt-2"><i class="fa-solid fa-shield-halved"></i> Admin Portal</a>
       </div>
     </div>
   </nav>

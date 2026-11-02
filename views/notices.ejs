@@ -12,14 +12,92 @@
     </div>
     
     <% if (locals.isAdmin) { %>
-      <a 
-        href="/admin" 
+      <button 
+        type="button" 
+        onclick="document.getElementById('post-notice-form-card').classList.toggle('hidden')" 
         class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 font-extrabold px-5 py-2.5 rounded-lg text-sm transition-all shadow flex items-center gap-2"
       >
-        <i class="fa-solid fa-plus"></i> Post Notice
-      </a>
+        <i class="fa-solid fa-plus"></i> Post Notice / Event
+      </button>
     <% } %>
   </div>
+
+  <% if (locals.isAdmin) { %>
+    <!-- ADMIN POST NOTICE CARD (Visible on Notices page) -->
+    <div id="post-notice-form-card" class="hidden mb-8 bg-white rounded-xl border border-slate-200 shadow-md p-6">
+      <div class="flex justify-between items-center pb-3 mb-4 border-b">
+        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <i class="fa-solid fa-bullhorn text-ndtBlue"></i> Post New Campus Notice / Event
+        </h3>
+        <button type="button" onclick="document.getElementById('post-notice-form-card').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+      </div>
+
+      <form action="/admin/notice/new" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Notice Title <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              name="title" 
+              required 
+              placeholder="E.g., Batch 33 Reunion Event"
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Category <span class="text-red-500">*</span></label>
+            <select 
+              name="category" 
+              required 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+              <option value="notice">General Notice</option>
+              <option value="event">Campus Event / Function</option>
+              <option value="job">Career / Job Vacancy</option>
+              <option value="general">General News</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Attach Image (Optional)</label>
+          <input 
+            type="file" 
+            name="notice_image" 
+            accept="image/*"
+            class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-ndtBlue hover:file:bg-blue-100"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Content / Description <span class="text-red-500">*</span></label>
+          <textarea 
+            name="content" 
+            required 
+            rows="4" 
+            placeholder="Write notice details here..."
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm whitespace-pre-wrap"
+          ></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button 
+            type="button" 
+            onclick="document.getElementById('post-notice-form-card').classList.add('hidden')"
+            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="bg-ndtBlue hover:bg-indigo-950 text-white font-bold py-2 px-6 rounded-lg text-xs transition-all shadow"
+          >
+            Publish Notice <i class="fa-solid fa-paper-plane ml-1"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  <% } %>
 
   <!-- Notices Stream -->
   <% if (notices.length === 0) { %>

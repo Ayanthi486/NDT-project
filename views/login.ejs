@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+
+<div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-ndtBlue to-indigo-950 text-white p-8 text-center relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 mx-auto mb-3 bg-white/10 rounded-full flex items-center justify-center text-ndtGold text-2xl border border-white/20">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <h2 class="text-2xl font-black tracking-wide">
+          <span class="text-ndtGold">NDT</span><span class="text-white ml-0.5">අපි</span> Login
+        </h2>
+        <p class="text-xs text-slate-300 mt-1">
+          Sign in to view and manage your alumni & student profile
+        </p>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form action="/login" method="POST" class="p-8 space-y-5">
+      <!-- Identifier: Serial Number or Email -->
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+          Serial Number or Email Address <span class="text-red-500">*</span>
+        </label>
+        <div class="relative flex items-center">
+          <i class="fa-solid fa-id-card absolute left-3.5 text-slate-400"></i>
+          <input 
+            type="text" 
+            name="identifier" 
+            required 
+            placeholder="E.g., 36, CIV-04, or kasun@gmail.com"
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm transition-all"
+          >
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">You can enter either your Serial Number or Email.</p>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+          Password <span class="text-red-500">*</span>
+        </label>
+        <div class="relative flex items-center">
+          <i class="fa-solid fa-lock absolute left-3.5 text-slate-400"></i>
+          <input 
+            type="password" 
+            name="password" 
+            required 
+            placeholder="••••••••"
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm transition-all"
+          >
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="w-full bg-ndtGold hover:bg-yellow-500 text-ndtBlue font-extrabold py-3 px-4 rounded-lg text-sm transition-all shadow-md flex items-center justify-center gap-2"
+      >
+        <i class="fa-solid fa-right-to-bracket"></i> Log In
+      </button>
+
+      <!-- Newcomer Registration Callout -->
+      <div class="border-t border-slate-100 pt-5 text-center">
+        <p class="text-xs text-slate-500">
+          New to NDT Community?
+        </p>
+        <a 
+          href="/register" 
+          class="mt-2 inline-flex items-center justify-center gap-1.5 w-full bg-blue-50 hover:bg-blue-100 text-ndtBlue font-bold py-2.5 px-4 rounded-lg text-xs transition-colors border border-blue-200"
+        >
+          <i class="fa-solid fa-user-plus text-ndtGold"></i> Register New Profile
+        </a>
+      </div>
+
+      <!-- Admin Portal Link -->
+      <div class="pt-2 text-center">
+        <a href="/admin" class="text-slate-400 hover:text-slate-600 text-xs inline-flex items-center gap-1 transition-colors">
+          <i class="fa-solid fa-lock text-[10px]"></i> Are you an Administrator? Admin Login &rarr;
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

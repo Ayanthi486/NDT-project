@@ -1,14 +1,24 @@
 <%- include('partials/header') %>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-  <div class="mb-8">
-    <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
-      <i class="fa-solid <%= isEdit ? 'fa-user-pen' : 'fa-user-plus' %> text-ndtBlue"></i>
-      <%= isEdit ? 'Edit Your NDT Profile' : 'Register Your NDT Profile' %>
-    </h1>
-    <p class="text-slate-500 mt-1">
-      <%= isEdit ? 'Update your current details and contact info.' : 'Create your public NDT profile to connect with the campus network.' %>
-    </p>
+  <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid <%= isEdit ? 'fa-user-pen' : 'fa-user-plus' %> text-ndtBlue"></i>
+        <%= isEdit ? 'Edit Your NDT Profile' : 'Register Your NDT Profile' %>
+      </h1>
+      <p class="text-slate-500 mt-1">
+        <%= isEdit ? 'Update your current details and contact info.' : 'Create your public NDT profile to connect with the campus network.' %>
+      </p>
+    </div>
+    <% if (!isEdit) { %>
+      <a 
+        href="/login" 
+        class="bg-blue-50 hover:bg-blue-100 text-ndtBlue border border-blue-200 text-xs font-bold px-4 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+      >
+        <i class="fa-solid fa-right-to-bracket"></i> Already registered? Log in
+      </a>
+    <% } %>
   </div>
 
   <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">

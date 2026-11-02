@@ -135,14 +135,23 @@
     <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
       <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b">Quick Actions</h3>
       <div class="space-y-3">
-        <a href="/profile/new" class="w-full bg-ndtBlue text-white hover:bg-indigo-950 font-bold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 shadow">
-          <i class="fa-solid fa-user-plus text-ndtGold"></i> Register Your Profile
-        </a>
+        <% if (locals.isUser && locals.currentUser) { %>
+          <a href="/profile/<%= locals.userId %>" class="w-full bg-ndtBlue text-white hover:bg-indigo-950 font-bold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 shadow">
+            <i class="fa-solid fa-user-circle text-ndtGold"></i> View My Profile
+          </a>
+        <% } else { %>
+          <a href="/register" class="w-full bg-ndtBlue text-white hover:bg-indigo-950 font-bold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 shadow">
+            <i class="fa-solid fa-user-plus text-ndtGold"></i> Register Profile
+          </a>
+          <a href="/login" class="w-full bg-blue-50 text-ndtBlue hover:bg-blue-100 font-bold py-2.5 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 border border-blue-200 text-sm">
+            <i class="fa-solid fa-right-to-bracket text-ndtGold"></i> Member Login
+          </a>
+        <% } %>
         <a href="/directory" class="w-full bg-slate-100 text-slate-800 hover:bg-slate-200 font-semibold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 border">
           <i class="fa-solid fa-search"></i> Student & Alumni Directory
         </a>
-        <a href="/admin" class="w-full bg-slate-50 text-slate-500 hover:text-slate-700 hover:bg-slate-100 font-medium py-2.5 px-4 rounded-lg text-center text-sm transition-all flex items-center justify-center gap-2 border border-dashed">
-          <i class="fa-solid fa-user-shield"></i> Officer/Admin Area
+        <a href="/admin" class="w-full bg-slate-50 text-slate-500 hover:text-slate-700 hover:bg-slate-100 font-medium py-2 px-4 rounded-lg text-center text-xs transition-all flex items-center justify-center gap-2 border border-dashed">
+          <i class="fa-solid fa-shield-halved"></i> Admin Portal
         </a>
       </div>
     </div>
