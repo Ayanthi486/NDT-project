@@ -1,0 +1,413 @@
+<%- include('partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <% if (!locals.isAdmin) { %>
+    <!-- LOGIN STATE -->
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mt-10">
+      <div class="bg-ndtBlue text-white px-6 py-5 text-center">
+        <h2 class="text-xl font-bold tracking-wide">Admin Portal Access</h2>
+        <p class="text-xs text-slate-300 mt-1">Authorized personnel only</p>
+      </div>
+      <form action="/admin/login" method="POST" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Username</label>
+          <input 
+            type="text" 
+            name="username" 
+            required 
+            placeholder="Enter admin username"
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            required 
+            placeholder="••••••••"
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+          >
+        </div>
+        <button 
+          type="submit" 
+          class="w-full bg-ndtBlue hover:bg-indigo-950 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all shadow"
+        >
+          Login to Dashboard
+        </button>
+      </form>
+      <div class="px-6 py-3 text-center text-xs text-slate-500 bg-slate-50 border-t">
+        <i class="fa-solid fa-circle-info text-ndtBlue"></i> Default: <code class="bg-slate-200 px-1.5 py-0.5 rounded font-bold text-slate-700">admin</code> / <code class="bg-slate-200 px-1.5 py-0.5 rounded font-bold text-slate-700">admin123</code>
+      </div>
+    </div>
+
+  <% } else { %>
+    <!-- DASHBOARD STATE -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b pb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-user-shield text-ndtBlue"></i> Admin Control Dashboard
+        </h1>
+        <p class="text-slate-500 mt-1">Manage alumni profile approvals, publish announcements, and monitor registrations.</p>
+      </div>
+      <a 
+        href="/admin/logout" 
+        class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-bold px-4 py-2.5 rounded-lg text-sm transition-all border border-red-200 flex items-center gap-1.5"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </div>
+
+    <!-- Stats summary grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-4 rounded-xl border shadow-sm">
+        <span class="block text-xs font-bold text-slate-400 uppercase">Total Alumni</span>
+        <span class="text-2xl font-black text-slate-800"><%= stats.totalAlumni %></span>
+      </div>
+      <div class="bg-white p-4 rounded-xl border shadow-sm">
+        <span class="block text-xs font-bold text-slate-400 uppercase text-amber-500">Pending Approvals</span>
+        <span class="text-2xl font-black text-amber-600"><%= pendingAlumni.length %></span>
+      </div>
+      <div class="bg-white p-4 rounded-xl border shadow-sm">
+        <span class="block text-xs font-bold text-slate-400 uppercase">Notices Published</span>
+        <span class="text-2xl font-black text-slate-800"><%= stats.totalNotices %></span>
+      </div>
+      <div class="bg-white p-4 rounded-xl border shadow-sm">
+        <span class="block text-xs font-bold text-slate-400 uppercase">Active Batches</span>
+        <span class="text-2xl font-black text-slate-800"><%= stats.totalBatches %></span>
+      </div>
+    </div>
+
+    <!-- Main Workspace Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- LEFT SECTION: Pending Approvals & Alumni List (2 cols on large screen) -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- PENDING APPROVALS LIST -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+          <div class="bg-amber-50 border-b px-6 py-4 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-circle-exclamation text-amber-500"></i> Pending Profile Approvals (<%= pendingAlumni.length %>)
+            </h3>
+            <span class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Requires Review</span>
+          </div>
+
+          <% if (pendingAlumni.length === 0) { %>
+            <div class="p-8 text-center text-slate-400 text-sm font-medium">
+              <i class="fa-solid fa-circle-check text-2xl text-green-500 mb-2 block"></i>
+              No pending registrations! All submissions are reviewed.
+            </div>
+          <% } else { %>
+            <div class="divide-y max-h-[400px] overflow-y-auto">
+              <% pendingAlumni.forEach(alumnus => { %>
+                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <% if (alumnus.profile_pic) { %>
+                      <img src="/uploads/<%= alumnus.profile_pic %>" class="w-10 h-10 rounded-full object-cover">
+                    <% } else { %>
+                      <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm uppercase"><%= alumnus.name.charAt(0) %></div>
+                    <% } %>
+                    <div>
+                      <h4 class="font-bold text-slate-800 text-sm"><%= alumnus.name %></h4>
+                      <p class="text-xs text-slate-500">
+                        Batch <%= alumnus.batch %> &bull; <%= alumnus.field_of_study %> Tech &bull; 
+                        Serial: <span class="font-bold text-slate-700"><%= alumnus.serial_number %></span>
+                        <% if(alumnus.card_number) { %> &bull; Card: <%= alumnus.card_number %><% } %>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <!-- Actions -->
+                  <div class="flex items-center gap-2">
+                    <form action="/admin/alumni/approve/<%= alumnus.id %>" method="POST">
+                      <button 
+                        type="submit" 
+                        class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1 shadow-sm"
+                      >
+                        <i class="fa-solid fa-check"></i> Approve
+                      </button>
+                    </form>
+                    <form action="/admin/alumni/delete/<%= alumnus.id %>" method="POST" onsubmit="return confirm('Reject and permanently delete this registration?')">
+                      <button 
+                        type="submit" 
+                        class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 border border-red-200"
+                      >
+                        <i class="fa-solid fa-xmark"></i> Reject
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- MANAGE APPROVED ALUMNI LIST -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+          <div class="border-b px-6 py-4">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-user-check text-green-600"></i> Active Registered Alumni
+            </h3>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-slate-50 border-b text-slate-400 font-bold text-xs uppercase tracking-wider">
+                  <th class="py-3 px-6">Name</th>
+                  <th class="py-3 px-6">Batch & Field</th>
+                  <th class="py-3 px-6">Serial</th>
+                  <th class="py-3 px-6">Card No</th>
+                  <th class="py-3 px-6 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y text-slate-700 font-medium">
+                <% if (approvedAlumni.length === 0) { %>
+                  <tr>
+                    <td colspan="5" class="py-6 text-center text-slate-400 italic">No approved profiles in the database.</td>
+                  </tr>
+                <% } else { %>
+                  <% approvedAlumni.forEach(alumnus => { %>
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                      <td class="py-4 px-6 flex items-center gap-3">
+                        <% if (alumnus.profile_pic) { %>
+                          <img src="/uploads/<%= alumnus.profile_pic %>" class="w-8 h-8 rounded-full object-cover">
+                        <% } else { %>
+                          <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-xs uppercase"><%= alumnus.name.charAt(0) %></div>
+                        <% } %>
+                        <a href="/profile/<%= alumnus.id %>" class="font-bold text-ndtLightBlue hover:underline truncate block max-w-[150px]"><%= alumnus.name %></a>
+                      </td>
+                      <td class="py-4 px-6">
+                        <span class="block text-xs text-slate-800 font-semibold">Batch <%= alumnus.batch %></span>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wide"><%= alumnus.field_of_study %> Tech</span>
+                      </td>
+                      <td class="py-4 px-6 font-bold text-slate-700 text-xs"><%= alumnus.serial_number %></td>
+                      <td class="py-4 px-6 text-slate-500 text-xs"><%= alumnus.card_number || 'N/A' %></td>
+                      <td class="py-4 px-6 text-center">
+                        <form action="/admin/alumni/delete/<%= alumnus.id %>" method="POST" onsubmit="return confirm('Permanently delete this alumnus account from directory?')">
+                          <button 
+                            type="submit" 
+                            class="text-red-500 hover:text-red-700 text-xs font-bold transition-colors inline-flex items-center gap-1"
+                          >
+                            <i class="fa-solid fa-trash-can"></i> Delete
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SECTION: Publish Notice Form -->
+      <div>
+        <div class="bg-white rounded-xl border shadow-sm p-6 sticky top-20">
+          <h3 class="font-bold text-slate-800 text-base mb-4 pb-2 border-b flex items-center gap-1.5">
+            <i class="fa-solid fa-bullhorn text-ndtBlue"></i> Post Campus Notice / Event
+          </h3>
+
+          <form action="/admin/notice/new" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <!-- Notice Title -->
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Notice Title <span class="text-red-500">*</span></label>
+              <input 
+                type="text" 
+                name="title" 
+                required 
+                placeholder="E.g., Batch 33 Reunion Event"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+              >
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Category <span class="text-red-500">*</span></label>
+              <select 
+                name="category" 
+                required 
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+              >
+                <option value="notice">General Notice</option>
+                <option value="event">Campus Event / Function</option>
+                <option value="job">Career / Job Vacancy</option>
+                <option value="general">General News</option>
+              </select>
+            </div>
+
+            <!-- Notice Image Attachment -->
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Attach Image</label>
+              <input 
+                type="file" 
+                name="notice_image" 
+                accept="image/*"
+                class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-ndtBlue hover:file:bg-blue-100"
+              >
+            </div>
+
+            <!-- Content -->
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Content / Description <span class="text-red-500">*</span></label>
+              <textarea 
+                name="content" 
+                required 
+                rows="6" 
+                placeholder="Write notice details here..."
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm whitespace-pre-wrap"
+              ></textarea>
+            </div>
+
+            <button 
+              type="submit" 
+              class="w-full bg-ndtBlue hover:bg-indigo-950 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all shadow"
+            >
+              Publish Notice <i class="fa-solid fa-paper-plane ml-1"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- ADMIN CREDENTIALS & ACCOUNTS MANAGEMENT CARD -->
+        <div class="bg-white rounded-xl border shadow-sm p-6 space-y-6">
+          <div class="border-b pb-3 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-ndtBlue"></i> Admin Accounts & Security
+            </h3>
+            <span class="text-xs bg-blue-100 text-ndtBlue font-bold px-2 py-0.5 rounded">
+              Logged as: <%= locals.adminUser %>
+            </span>
+          </div>
+
+          <!-- Existing Admin Accounts List -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Registered Admins</h4>
+            <div class="space-y-2">
+              <% (locals.admins || []).forEach(a => { %>
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 border rounded-lg text-sm">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-slate-400 text-xs"></i>
+                    <span class="font-bold text-slate-700"><%= a.username %></span>
+                    <% if (a.username === locals.adminUser) { %>
+                      <span class="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded">You</span>
+                    <% } %>
+                  </div>
+                  <% if (a.username !== locals.adminUser) { %>
+                    <form action="/admin/delete-admin/<%= a.id %>" method="POST" onsubmit="return confirm('Remove admin access for <%= a.username %>?')">
+                      <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-bold transition-colors">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </form>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Change My Password Form -->
+          <div class="border-t pt-4">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-key text-amber-500"></i> Change Your Password
+            </h4>
+            <form action="/admin/change-password" method="POST" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Current Password</label>
+                <input 
+                  type="password" 
+                  name="current_password" 
+                  required 
+                  placeholder="Enter current password"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                >
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">New Password</label>
+                  <input 
+                    type="password" 
+                    name="new_password" 
+                    required 
+                    placeholder="Min 6 characters"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                  >
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Confirm New</label>
+                  <input 
+                    type="password" 
+                    name="confirm_new_password" 
+                    required 
+                    placeholder="Repeat new password"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                  >
+                </div>
+              </div>
+              <button 
+                type="submit" 
+                class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg text-xs transition-all shadow-sm"
+              >
+                Update Password
+              </button>
+            </form>
+          </div>
+
+          <!-- Add New Admin Form -->
+          <div class="border-t pt-4">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-plus text-ndtBlue"></i> Add New Admin Account
+            </h4>
+            <form action="/admin/create" method="POST" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">New Admin Username</label>
+                <input 
+                  type="text" 
+                  name="new_username" 
+                  required 
+                  placeholder="E.g., new_admin"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                >
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Password</label>
+                  <input 
+                    type="password" 
+                    name="new_password" 
+                    required 
+                    placeholder="Min 6 characters"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                  >
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Confirm</label>
+                  <input 
+                    type="password" 
+                    name="confirm_password" 
+                    required 
+                    placeholder="Repeat password"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:ring-2 focus:ring-ndtBlue focus:outline-none"
+                  >
+                </div>
+              </div>
+              <button 
+                type="submit" 
+                class="w-full bg-ndtBlue hover:bg-indigo-950 text-white font-bold py-2 rounded-lg text-xs transition-all shadow-sm"
+              >
+                Create Admin Account
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  <% } %>
+
+</div>
+
+<%- include('partials/footer') %>

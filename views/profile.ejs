@@ -1,0 +1,158 @@
+<%- include('partials/header') %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <!-- Back navigation -->
+  <div class="mb-6">
+    <a href="/directory" class="text-ndtLightBlue hover:text-ndtBlue font-bold text-sm inline-flex items-center gap-1.5 transition-colors">
+      <i class="fa-solid fa-arrow-left-long"></i> Back to Directory
+    </a>
+  </div>
+
+  <% if (alumnus.status === 'pending') { %>
+    <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-800 p-4 rounded-xl shadow-sm mb-6 flex items-start gap-3" role="alert">
+      <i class="fa-solid fa-clock-rotate-left mt-1 text-lg"></i>
+      <div>
+        <h4 class="font-bold">Pending Approval</h4>
+        <p class="text-sm">This profile is currently pending approval by the administrator to prevent spam. Once approved, it will be fully visible in the public directory search.</p>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Main Profile Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- Profile Banner / Header Cover -->
+    <div class="h-44 bg-gradient-to-r from-ndtBlue to-indigo-900 relative">
+      <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
+    </div>
+
+    <!-- Profile Info Box -->
+    <div class="px-6 pb-8 relative">
+      <!-- Avatar shifted up -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between -mt-16 sm:-mt-20 mb-6 gap-4">
+        <!-- Avatar image/initial -->
+        <% if (alumnus.profile_pic) { %>
+          <img 
+            src="/uploads/<%= alumnus.profile_pic %>" 
+            alt="<%= alumnus.name %>" 
+            class="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white flex-shrink-0"
+          >
+        <% } else { %>
+          <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-blue-50 border-4 border-white shadow-md flex items-center justify-center font-bold text-5xl text-ndtBlue flex-shrink-0 uppercase select-none">
+            <%= alumnus.name.charAt(0) %>
+          </div>
+        <% } %>
+
+        <!-- Edit Profile Trigger Button -->
+        <div>
+          <a 
+            href="/profile/edit/<%= alumnus.id %>" 
+            class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-lg text-sm transition-colors border shadow-sm"
+          >
+            <i class="fa-solid fa-user-pen"></i> Edit Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Core Info -->
+      <div class="border-b pb-6 mb-6">
+        <h2 class="text-3xl font-extrabold text-slate-800"><%= alumnus.name %></h2>
+        <p class="text-ndtLightBlue font-bold text-sm uppercase tracking-wider mt-1"><%= alumnus.field_of_study %> Engineering Technology</p>
+        
+        <% if (alumnus.current_job) { %>
+          <p class="text-slate-600 font-medium text-base mt-2 flex items-center gap-2">
+            <i class="fa-solid fa-briefcase text-slate-400"></i> <%= alumnus.current_job %> 
+            <% if (alumnus.company) { %> at <span class="font-bold text-slate-800"><%= alumnus.company %></span><% } %>
+          </p>
+        <% } else { %>
+          <p class="text-slate-400 italic text-sm mt-2 flex items-center gap-2">
+            <i class="fa-solid fa-briefcase text-slate-300"></i> Student / Job not specified
+          </p>
+        <% } %>
+      </div>
+
+      <!-- Grid: Identity details vs Contacts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Identity / Batch Details (Left column) -->
+        <div class="space-y-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"><i class="fa-solid fa-id-card"></i> College Identity Details</h3>
+          
+          <div class="bg-slate-50 border rounded-xl p-5 space-y-4">
+            <!-- Batch -->
+            <div class="flex justify-between items-center py-1.5 border-b border-slate-200 last:border-0">
+              <span class="text-slate-500 font-semibold text-sm">Batch Number</span>
+              <span class="text-slate-800 font-extrabold bg-blue-100 text-ndtBlue px-3 py-1 rounded-lg text-sm">
+                Batch <%= alumnus.batch %>
+              </span>
+            </div>
+
+            <!-- Serial Number -->
+            <div class="flex justify-between items-center py-1.5 border-b border-slate-200 last:border-0">
+              <span class="text-slate-500 font-semibold text-sm">Serial Number (Rank)</span>
+              <span class="text-slate-800 font-extrabold bg-amber-100 text-amber-800 px-3 py-1 rounded-lg text-sm">
+                <%= alumnus.serial_number %>
+              </span>
+            </div>
+
+            <!-- Card Number -->
+            <div class="flex justify-between items-center py-1.5 last:border-0">
+              <span class="text-slate-500 font-semibold text-sm">Index / Card Number</span>
+              <span class="text-slate-800 font-extrabold bg-slate-200 text-slate-700 px-3 py-1 rounded-lg text-sm">
+                <%= alumnus.card_number || 'Not Provided' %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact & Social Details (Right column) -->
+        <div class="space-y-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"><i class="fa-solid fa-address-book"></i> Contact Details</h3>
+          
+          <div class="space-y-3">
+            <!-- Email -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg">
+              <div class="bg-blue-100 text-ndtBlue p-2 rounded-lg text-sm"><i class="fa-solid fa-envelope"></i></div>
+              <div class="min-w-0">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</span>
+                <% if (alumnus.email) { %>
+                  <a href="mailto:<%= alumnus.email %>" class="text-sm font-semibold text-ndtLightBlue hover:underline truncate block"><%= alumnus.email %></a>
+                <% } else { %>
+                  <span class="text-sm text-slate-400 italic">Not shared</span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg">
+              <div class="bg-green-100 text-green-700 p-2 rounded-lg text-sm"><i class="fa-solid fa-phone"></i></div>
+              <div class="min-w-0">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone Number</span>
+                <% if (alumnus.phone) { %>
+                  <a href="tel:<%= alumnus.phone %>" class="text-sm font-semibold text-slate-700 hover:underline truncate block"><%= alumnus.phone %></a>
+                <% } else { %>
+                  <span class="text-sm text-slate-400 italic">Not shared</span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- LinkedIn -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg">
+              <div class="bg-blue-100 text-sky-700 p-2 rounded-lg text-sm"><i class="fa-brands fa-linkedin-in"></i></div>
+              <div class="min-w-0">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">LinkedIn Profile</span>
+                <% if (alumnus.linkedin) { %>
+                  <a href="<%= alumnus.linkedin.startsWith('http') ? alumnus.linkedin : 'https://' + alumnus.linkedin %>" target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-ndtLightBlue hover:underline truncate block flex items-center gap-1">
+                    Connect <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
+                  </a>
+                <% } else { %>
+                  <span class="text-sm text-slate-400 italic">Not shared</span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

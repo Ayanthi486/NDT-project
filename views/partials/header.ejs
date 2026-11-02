@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=device-width, initial-scale=1.0">
+  <title>NDT අපි | Alumni Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for Montserrat & Gemunu Libre -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Gemunu+Libre:wght@800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ndtBlue: '#0c2461',
+            ndtGold: '#f6b93b',
+            ndtLightBlue: '#1e3799'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .brand-ndt {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .brand-api {
+      font-family:'Abhaya Libre', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-ndtBlue text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo / Title -->
+        <div class="flex items-center">
+          <a href="/" class="flex items-center space-x-3 group">
+            <img src="/images/logo.png" alt="ITUM Logo" class="h-10 w-auto object-contain filter brightness-110 group-hover:scale-105 transition-transform" />
+            <div>
+              <span class="block">
+                <span class="brand-ndt font-black text-xl tracking-wider text-ndtGold">NDT</span>
+                <span class="brand-api font-extrabold text-2xl text-white ml-0.5">අපි</span>
+              </span>
+              <span class="text-xs text-slate-300 block -mt-1 font-medium">NDT Alumni Hub</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Desktop Navigation Menu -->
+        <div class="hidden md:flex space-x-6 items-center">
+          <a href="/" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-house"></i> Home</a>
+          <a href="/directory" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-users"></i> Directory</a>
+          <a href="/notices" class="hover:text-ndtGold px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Notices</a>
+          <a href="/profile/new" class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Join NDT අපි</a>
+          <a href="/admin" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition-colors flex items-center gap-1"><i class="fa-solid fa-lock"></i> Admin</a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-ndtLightBlue border-t border-blue-800">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <a href="/" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="/directory" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-users"></i> Directory</a>
+        <a href="/notices" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Notices</a>
+        <a href="/profile/new" class="block bg-ndtGold text-ndtBlue hover:bg-yellow-500 px-3 py-2 rounded-md text-base font-bold text-center flex items-center justify-center gap-2"><i class="fa-solid fa-user-plus"></i> Join NDT අපි</a>
+        <a href="/admin" class="block hover:bg-blue-800 px-3 py-2 rounded-md text-base font-semibold text-slate-300 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow">
+    <!-- Success/Error Flash Alert Containers -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" id="flash-container">
+      <% if (locals.success_msg) { %>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow mb-4 flex justify-between items-center" role="alert">
+          <div>
+            <p class="font-bold"><i class="fa-solid fa-circle-check"></i> Done</p>
+            <p class="text-sm"><%= success_msg %></p>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-green-700 font-bold">&times;</button>
+        </div>
+      <% } %>
+      <% if (locals.error_msg) { %>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow mb-4 flex justify-between items-center" role="alert">
+          <div>
+            <p class="font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Error</p>
+            <p class="text-sm"><%= error_msg %></p>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-red-700 font-bold">&times;</button>
+        </div>
+      <% } %>
+    </div>

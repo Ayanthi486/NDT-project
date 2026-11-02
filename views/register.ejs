@@ -1,0 +1,251 @@
+<%- include('partials/header') %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="mb-8">
+    <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+      <i class="fa-solid <%= isEdit ? 'fa-user-pen' : 'fa-user-plus' %> text-ndtBlue"></i>
+      <%= isEdit ? 'Edit Your NDT Profile' : 'Register Your NDT Profile' %>
+    </h1>
+    <p class="text-slate-500 mt-1">
+      <%= isEdit ? 'Update your current details and contact info.' : 'Create your public NDT profile to connect with the campus network.' %>
+    </p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+    <form 
+      action="<%= isEdit ? '/profile/edit/' + alumnus.id : '/profile/new' %>" 
+      method="POST" 
+      enctype="multipart/form-data" 
+      class="space-y-6"
+    >
+      
+      <!-- Attention subheader for guidance -->
+      <div class="bg-blue-50 border-l-4 border-ndtBlue text-ndtBlue p-4 rounded text-sm mb-6">
+        <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Attention:</p>
+        <p class="mt-1">
+          <%= isEdit ? 'Please enter the profile password you chose during registration to save updates.' : 'Your profile will be immediately visible in the directory once registered.' %>
+        </p>
+      </div>
+
+      <!-- PERSONAL SECTION -->
+      <div>
+        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-1.5">
+          <i class="fa-regular fa-user"></i> Personal & Academic Details
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Full Name -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Full Name <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              name="name" 
+              required
+              value="<%= isEdit ? alumnus.name : '' %>"
+              placeholder="E.g., Kasun Perera" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- Batch Number -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Batch Number <span class="text-red-500">*</span></label>
+            <select 
+              name="batch" 
+              required
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+              <option value="">Select Batch</option>
+              <% for(let i = 100; i >= 1; i--) { %>
+                <option value="<%= i %>" <%= (isEdit && alumnus.batch == i) ? 'selected' : '' %>>Batch <%= i %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <!-- Field of Study -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Field of Study <span class="text-red-500">*</span></label>
+            <select 
+              name="field_of_study" 
+              required
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+              <option value="">Select Field</option>
+              <option value="Civil" <%= (isEdit && alumnus.field_of_study === 'Civil') ? 'selected' : '' %>>Civil Engineering Technology</option>
+              <option value="Electrical" <%= (isEdit && alumnus.field_of_study === 'Electrical') ? 'selected' : '' %>>Electrical Engineering Technology</option>
+              <option value="Electronic" <%= (isEdit && alumnus.field_of_study === 'Electronic') ? 'selected' : '' %>>Electronic & Telecom Engineering Technology</option>
+              <option value="Mechanical" <%= (isEdit && alumnus.field_of_study === 'Mechanical') ? 'selected' : '' %>>Mechanical Engineering Technology</option>
+              <option value="Chemical" <%= (isEdit && alumnus.field_of_study === 'Chemical') ? 'selected' : '' %>>Chemical Engineering Technology</option>
+              <option value="Marine" <%= (isEdit && alumnus.field_of_study === 'Marine') ? 'selected' : '' %>>Marine Engineering Technology</option>
+              <option value="Nautical" <%= (isEdit && alumnus.field_of_study === 'Nautical') ? 'selected' : '' %>>Nautical Studies</option>
+              <option value="Polymer" <%= (isEdit && alumnus.field_of_study === 'Polymer') ? 'selected' : '' %>>Polymer Technology</option>
+              <option value="Textile" <%= (isEdit && alumnus.field_of_study === 'Textile') ? 'selected' : '' %>>Textile & Clothing Technology</option>
+              <option value="IT" <%= (isEdit && alumnus.field_of_study === 'IT') ? 'selected' : '' %>>Information Technology</option>
+            </select>
+          </div>
+
+          <!-- Serial Number -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Serial Number <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              name="serial_number" 
+              required
+              value="<%= isEdit ? alumnus.serial_number : '' %>"
+              placeholder="E.g., CIV-04 or 1024" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+              <%= isEdit ? 'readonly class="opacity-70 bg-slate-100 cursor-not-allowed"' : '' %>
+            >
+            <% if (isEdit) { %>
+              <p class="text-[10px] text-slate-400 mt-1">Serial number cannot be modified. Contact admin if wrong.</p>
+            <% } %>
+          </div>
+
+          <!-- Card/Index Number -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Card / Index Number</label>
+            <input 
+              type="text" 
+              name="card_number" 
+              value="<%= (isEdit && alumnus.card_number) ? alumnus.card_number : '' %>"
+              placeholder="E.g., 23IT0123" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- Profile Picture -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Profile Picture</label>
+            <input 
+              type="file" 
+              name="profile_pic" 
+              accept="image/*"
+              class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-ndtBlue hover:file:bg-blue-100"
+            >
+            <% if (isEdit && alumnus.profile_pic) { %>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-xs text-slate-400">Current photo:</span>
+                <img src="/uploads/<%= alumnus.profile_pic %>" class="w-8 h-8 rounded-full object-cover">
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFESSIONAL & CONTACT SECTION -->
+      <div class="pt-4">
+        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-briefcase"></i> Employment & Contact Information
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Job Designation -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Current Job Title</label>
+            <input 
+              type="text" 
+              name="current_job" 
+              value="<%= (isEdit && alumnus.current_job) ? alumnus.current_job : '' %>"
+              placeholder="E.g., Civil Engineer" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- Company Name -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Company Name</label>
+            <input 
+              type="text" 
+              name="company" 
+              value="<%= (isEdit && alumnus.company) ? alumnus.company : '' %>"
+              placeholder="E.g., Access Engineering PLC" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Email Address</label>
+            <input 
+              type="email" 
+              name="email" 
+              value="<%= (isEdit && alumnus.email) ? alumnus.email : '' %>"
+              placeholder="E.g., kasun@gmail.com" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Phone Number</label>
+            <input 
+              type="tel" 
+              name="phone" 
+              value="<%= (isEdit && alumnus.phone) ? alumnus.phone : '' %>"
+              placeholder="E.g., 0771234567" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+
+          <!-- LinkedIn URL -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">LinkedIn Profile URL</label>
+            <input 
+              type="url" 
+              name="linkedin" 
+              value="<%= (isEdit && alumnus.linkedin) ? alumnus.linkedin : '' %>"
+              placeholder="E.g., https://linkedin.com/in/kasun-perera" 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY SECTION -->
+      <div class="pt-4 border-t">
+        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-halved"></i> Security Verification
+        </h3>
+        
+        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">
+              <%= isEdit ? 'Enter Your Profile Password *' : 'Set Profile Password *' %>
+            </label>
+            <input 
+              type="password" 
+              name="password" 
+              required
+              placeholder="<%= isEdit ? 'Required to authenticate changes' : 'Minimum 6 characters' %>" 
+              class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm shadow-sm"
+            >
+            <p class="text-[11px] text-slate-500 mt-2">
+              <%= isEdit 
+                ? 'Enter the password you set during registration to authorize editing of this profile.' 
+                : 'Set a secure password that you can remember to update your profile in the future.' %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end gap-3 pt-6 border-t">
+        <a 
+          href="<%= isEdit ? '/profile/' + alumnus.id : '/' %>" 
+          class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-sm transition-colors border"
+        >
+          Cancel
+        </a>
+        <button 
+          type="submit" 
+          class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 font-extrabold px-8 py-2.5 rounded-lg text-sm transition-all shadow"
+        >
+          <%= isEdit ? 'Save Changes' : 'Submit Registration' %>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

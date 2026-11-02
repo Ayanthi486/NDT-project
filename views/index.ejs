@@ -1,0 +1,161 @@
+<%- include('partials/header') %>
+
+<!-- Hero / Search Section with Campus Background Image -->
+<div class="relative bg-cover bg-center text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-2xl" style="background-image: linear-gradient(rgba(12, 36, 97, 0.9), rgba(12, 36, 97, 0.92)), url('/images/campus-bg.jpg');">
+  <!-- Decorative background elements -->
+  <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+  <div class="absolute -right-16 -top-16 w-64 h-64 bg-ndtGold opacity-20 rounded-full blur-3xl"></div>
+  <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-blue-500 opacity-20 rounded-full blur-3xl"></div>
+
+  <div class="relative max-w-4xl mx-auto text-center">
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
+      Welcome to <span class="brand-ndt text-ndtGold font-black">NDT</span><span class="brand-api text-white font-extrabold ml-1">අපි</span>
+    </h1>
+    <p class="text-lg sm:text-xl text-slate-200 mb-8 max-w-2xl mx-auto font-medium">
+      A unified platform for all NDT batches to connect. Find batch details, serial numbers, and student card index numbers with ease.
+    </p>
+
+    <!-- Global Search Bar -->
+    <form action="/directory" method="GET" class="max-w-2xl mx-auto">
+      <div class="flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-xl shadow-lg border-2 border-slate-100">
+        <div class="flex-grow flex items-center px-3 gap-2">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-lg"></i>
+          <input 
+            type="text" 
+            name="q" 
+            placeholder="Search by Name, Serial Number, or Card Number..." 
+            class="w-full py-2.5 text-slate-800 focus:outline-none text-base"
+            required
+          >
+        </div>
+        <button 
+          type="submit" 
+          class="bg-ndtGold hover:bg-yellow-500 text-ndtBlue px-8 py-3 rounded-lg font-bold transition-all shadow flex items-center justify-center gap-2 text-base"
+        >
+          Search <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </form>
+    
+    <!-- Quick Search Suggestions -->
+    <div class="mt-4 text-sm text-slate-300">
+      <span class="font-semibold text-ndtGold">Tip:</span> Try searching for a specific serial like <code class="bg-blue-950 px-1.5 py-0.5 rounded text-white text-xs">CIV-01</code> or <code class="bg-blue-950 px-1.5 py-0.5 rounded text-white text-xs">Batch 33</code>.
+    </div>
+  </div>
+</div>
+
+<!-- Stats Counter Section -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+  <div class="bg-white rounded-xl shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-6 p-8 border border-slate-100">
+    <div class="text-center p-4 border-b sm:border-b-0 sm:border-r border-slate-100 last:border-0 flex flex-col items-center">
+      <div class="bg-blue-50 text-ndtBlue p-3 rounded-full mb-3 text-2xl h-14 w-14 flex items-center justify-center">
+        <i class="fa-solid fa-user-graduate"></i>
+      </div>
+      <span class="text-3xl font-extrabold text-slate-800 block"><%= stats.totalAlumni %></span>
+      <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Registered Alumni</span>
+    </div>
+    
+    <div class="text-center p-4 border-b sm:border-b-0 sm:border-r border-slate-100 last:border-0 flex flex-col items-center">
+      <div class="bg-yellow-50 text-ndtGold p-3 rounded-full mb-3 text-2xl h-14 w-14 flex items-center justify-center">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <span class="text-3xl font-extrabold text-slate-800 block"><%= stats.totalBatches %></span>
+      <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Active Batches</span>
+    </div>
+    
+    <div class="text-center p-4 last:border-0 flex flex-col items-center">
+      <div class="bg-green-50 text-green-600 p-3 rounded-full mb-3 text-2xl h-14 w-14 flex items-center justify-center">
+        <i class="fa-solid fa-bullhorn"></i>
+      </div>
+      <span class="text-3xl font-extrabold text-slate-800 block"><%= stats.totalNotices %></span>
+      <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Notices & Events</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Body Grid (Notices & Quick Actions) -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Left Side: Recent Notices (2/3 width on large screens) -->
+  <div class="lg:col-span-2 space-y-6">
+    <div class="flex justify-between items-center border-b pb-4">
+      <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-newspaper text-ndtBlue"></i> Latest Campus Notices & Events
+      </h2>
+      <a href="/notices" class="text-ndtLightBlue hover:text-ndtBlue font-bold text-sm flex items-center gap-1">
+        View All <i class="fa-solid fa-angles-right text-xs"></i>
+      </a>
+    </div>
+
+    <% if (recentNotices.length === 0) { %>
+      <div class="bg-white rounded-xl p-8 border border-slate-100 text-center text-slate-500 shadow-sm">
+        <i class="fa-regular fa-folder-open text-4xl mb-3 block text-slate-300"></i>
+        <p class="font-medium text-lg">No notices published yet.</p>
+        <p class="text-sm text-slate-400 mt-1">Check back later for updates or announcements.</p>
+      </div>
+    <% } else { %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <% recentNotices.forEach(notice => { %>
+          <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-all flex flex-col justify-between">
+            <% if (notice.image_url) { %>
+              <img src="/uploads/<%= notice.image_url %>" alt="<%= notice.title %>" class="w-full h-44 object-cover">
+            <% } else { %>
+              <div class="bg-gradient-to-r from-blue-900 to-indigo-950 h-44 flex items-center justify-center text-slate-400 relative">
+                <i class="fa-solid fa-bullhorn text-5xl opacity-20"></i>
+                <span class="absolute text-sm font-bold text-slate-300 uppercase tracking-widest"><%= notice.category %></span>
+              </div>
+            <% } %>
+            <div class="p-5 flex-grow flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="px-2 py-0.5 text-xs font-semibold rounded-full uppercase <%= 
+                    notice.category === 'event' ? 'bg-amber-100 text-amber-800' :
+                    notice.category === 'job' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                  %>">
+                    <%= notice.category %>
+                  </span>
+                  <span class="text-xs text-slate-400 font-medium">
+                    <i class="fa-regular fa-calendar mr-1"></i> <%= new Date(notice.created_at).toLocaleDateString() %>
+                  </span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-1"><%= notice.title %></h3>
+                <p class="text-sm text-slate-600 line-clamp-3 mb-4"><%= notice.content %></p>
+              </div>
+              <a href="/notices#notice-<%= notice.id %>" class="text-ndtLightBlue hover:text-ndtBlue font-bold text-sm inline-flex items-center gap-1 mt-auto">
+                Read Details <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Right Side: Quick Action & Sidebar -->
+  <div class="space-y-6">
+    <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
+      <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b">Quick Actions</h3>
+      <div class="space-y-3">
+        <a href="/profile/new" class="w-full bg-ndtBlue text-white hover:bg-indigo-950 font-bold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 shadow">
+          <i class="fa-solid fa-user-plus text-ndtGold"></i> Register Your Profile
+        </a>
+        <a href="/directory" class="w-full bg-slate-100 text-slate-800 hover:bg-slate-200 font-semibold py-3 px-4 rounded-lg text-center transition-all flex items-center justify-center gap-2 border">
+          <i class="fa-solid fa-search"></i> Student & Alumni Directory
+        </a>
+        <a href="/admin" class="w-full bg-slate-50 text-slate-500 hover:text-slate-700 hover:bg-slate-100 font-medium py-2.5 px-4 rounded-lg text-center text-sm transition-all flex items-center justify-center gap-2 border border-dashed">
+          <i class="fa-solid fa-user-shield"></i> Officer/Admin Area
+        </a>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="bg-gradient-to-br from-blue-900 to-indigo-950 rounded-xl p-6 text-white shadow-md relative overflow-hidden">
+      <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-ndtGold opacity-10 rounded-full"></div>
+      <h3 class="text-lg font-bold text-ndtGold mb-3"><i class="fa-solid fa-circle-info"></i> About NDT අපි</h3>
+      <p class="text-sm text-slate-200 leading-relaxed">
+        This platform is designed for the NDT (ITUM, University of Moratuwa) community. It enables students and alumni to easily look up serial numbers and index/card details, even from 6-7 years ago, and stay updated with the latest campus notices and event schedules.
+      </p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

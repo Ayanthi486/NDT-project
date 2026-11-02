@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-bullhorn text-ndtBlue"></i> Notices & Campus Updates
+      </h1>
+      <p class="text-slate-500 mt-1">
+        Stay updated with reunions, college activities, and official campus announcements.
+      </p>
+    </div>
+    
+    <% if (locals.isAdmin) { %>
+      <a 
+        href="/admin" 
+        class="bg-ndtGold text-ndtBlue hover:bg-yellow-500 font-extrabold px-5 py-2.5 rounded-lg text-sm transition-all shadow flex items-center gap-2"
+      >
+        <i class="fa-solid fa-plus"></i> Post Notice
+      </a>
+    <% } %>
+  </div>
+
+  <!-- Notices Stream -->
+  <% if (notices.length === 0) { %>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-12 text-center text-slate-500">
+      <i class="fa-regular fa-bell-slash text-5xl mb-4 text-slate-300 block"></i>
+      <p class="font-bold text-lg">No announcements posted yet.</p>
+      <p class="text-sm text-slate-400 mt-1">Check back later for campus news and events.</p>
+    </div>
+  <% } else { %>
+    <div class="space-y-8">
+      <% notices.forEach(notice => { %>
+        <div 
+          id="notice-<%= notice.id %>" 
+          class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow"
+        >
+          <!-- Notice Image Sidebar -->
+          <% if (notice.image_url) { %>
+            <div class="md:w-1/3 flex-shrink-0">
+              <img 
+                src="/uploads/<%= notice.image_url %>" 
+                alt="<%= notice.title %>" 
+                class="w-full h-48 md:h-full object-cover"
+              >
+            </div>
+          <% } else { %>
+            <div class="md:w-1/3 bg-gradient-to-br from-blue-900 to-indigo-950 flex flex-col items-center justify-center p-8 text-white relative min-h-[180px]">
+              <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:8px_8px]"></div>
+              <i class="fa-solid fa-bullhorn text-4xl text-ndtGold opacity-50 mb-2"></i>
+              <span class="text-xs uppercase tracking-widest font-extrabold text-slate-300"><%= notice.category %></span>
+            </div>
+          <% } %>
+
+          <!-- Notice Content -->
+          <div class="p-6 md:p-8 flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full uppercase tracking-wide <%= 
+                  notice.category === 'event' ? 'bg-amber-100 text-amber-800' :
+                  notice.category === 'job' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                %>">
+                  <%= notice.category %>
+                </span>
+                <span class="text-xs text-slate-400 font-semibold">
+                  <i class="fa-regular fa-calendar mr-1"></i> 
+                  <%= new Date(notice.created_at).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %>
+                </span>
+              </div>
+
+              <h2 class="text-xl font-extrabold text-slate-800 mb-3"><%= notice.title %></h2>
+              <p class="text-slate-600 leading-relaxed text-sm whitespace-pre-line"><%= notice.content %></p>
+            </div>
+
+            <!-- Admin Action bar if logged in -->
+            <% if (locals.isAdmin) { %>
+              <div class="border-t border-slate-100 mt-6 pt-4 flex justify-end">
+                <form action="/admin/notice/delete/<%= notice.id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this notice?')">
+                  <button 
+                    type="submit" 
+                    class="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  >
+                    <i class="fa-solid fa-trash-can"></i> Delete Announcement
+                  </button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

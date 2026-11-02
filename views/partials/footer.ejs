@@ -1,0 +1,60 @@
+  </main>
+
+  <footer class="bg-ndtBlue text-slate-300 border-t border-blue-900 mt-12 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Site Info -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-3">NDT අපි</h3>
+          <p class="text-sm text-slate-400">
+            A unified platform for all NDT (National Diploma in Technology) batches to connect, search profile details, serial numbers, and stay updated with campus notices.
+          </p>
+          <div class="mt-4 flex space-x-4">
+            <a href="#" class="hover:text-ndtGold transition-colors text-lg"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" class="hover:text-ndtGold transition-colors text-lg"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="#" class="hover:text-ndtGold transition-colors text-lg"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-3">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/" class="hover:text-ndtGold transition-colors"><i class="fa-solid fa-angle-right text-xs"></i> Home</a></li>
+            <li><a href="/directory" class="hover:text-ndtGold transition-colors"><i class="fa-solid fa-angle-right text-xs"></i> Student & Alumni Directory</a></li>
+            <li><a href="/notices" class="hover:text-ndtGold transition-colors"><i class="fa-solid fa-angle-right text-xs"></i> Notices & Events</a></li>
+            <li><a href="/profile/new" class="hover:text-ndtGold transition-colors"><i class="fa-solid fa-angle-right text-xs"></i> Add Profile</a></li>
+          </ul>
+        </div>
+
+        <!-- Campus Info -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-3">Institute Information</h3>
+          <p class="text-sm text-slate-400">
+            Institute of Technology, University of Moratuwa (ITUM)<br>
+            Diyagama, Homagama,<br>
+            Sri Lanka.
+          </p>
+          <p class="text-sm mt-3 font-semibold text-ndtGold flex items-center gap-1">
+            <i class="fa-solid fa-heart"></i> Built for the NDT Family
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t border-blue-900 mt-8 pt-6 text-center text-xs text-slate-500">
+        <p>&copy; <%= new Date().getFullYear() %> NDT අපි. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for Mobile Menu Toggle -->
+  <script>
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>

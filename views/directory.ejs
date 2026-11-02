@@ -1,0 +1,182 @@
+<%- include('partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+      <i class="fa-solid fa-users text-ndtBlue"></i> Student & Alumni Directory
+    </h1>
+    <p class="text-slate-500 mt-1">
+      Browse and search through profiles of NDT students and alumni across batches.
+    </p>
+  </div>
+
+  <!-- Search & Filter Card -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-8">
+    <form action="/directory" method="GET" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Search input -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Search Query</label>
+          <div class="relative flex items-center">
+            <i class="fa-solid fa-search absolute left-3.5 text-slate-400"></i>
+            <input 
+              type="text" 
+              name="q" 
+              value="<%= filters.q || '' %>"
+              placeholder="Search Name, Serial, or Card number..."
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue focus:border-transparent text-sm"
+            >
+          </div>
+        </div>
+
+        <!-- Filter by Batch -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Filter by Batch</label>
+          <select 
+            name="batch" 
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+          >
+            <option value="">All Batches</option>
+            <% for(let i = 100; i >= 1; i--) { %>
+              <option value="<%= i %>" <%= (filters.batch == i) ? 'selected' : '' %>>Batch <%= i %></option>
+            <% } %>
+          </select>
+        </div>
+
+        <!-- Filter by Field of Study -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Field of Study</label>
+          <select 
+            name="field" 
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ndtBlue text-sm"
+          >
+            <option value="">All Fields</option>
+            <option value="Civil" <%= (filters.field === 'Civil') ? 'selected' : '' %>>Civil Technology</option>
+            <option value="Electrical" <%= (filters.field === 'Electrical') ? 'selected' : '' %>>Electrical Technology</option>
+            <option value="Electronic" <%= (filters.field === 'Electronic') ? 'selected' : '' %>>Electronic & Telecom</option>
+            <option value="Mechanical" <%= (filters.field === 'Mechanical') ? 'selected' : '' %>>Mechanical Technology</option>
+            <option value="Chemical" <%= (filters.field === 'Chemical') ? 'selected' : '' %>>Chemical Technology</option>
+            <option value="Marine" <%= (filters.field === 'Marine') ? 'selected' : '' %>>Marine Technology</option>
+            <option value="Nautical" <%= (filters.field === 'Nautical') ? 'selected' : '' %>>Nautical Studies</option>
+            <option value="Polymer" <%= (filters.field === 'Polymer') ? 'selected' : '' %>>Polymer Technology</option>
+            <option value="Textile" <%= (filters.field === 'Textile') ? 'selected' : '' %>>Textile & Clothing</option>
+            <option value="IT" <%= (filters.field === 'IT') ? 'selected' : '' %>>Information Technology</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex justify-end gap-2 pt-2">
+        <% if (filters.q || filters.batch || filters.field) { %>
+          <a 
+            href="/directory" 
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-sm transition-colors"
+          >
+            Clear Filters
+          </a>
+        <% } %>
+        <button 
+          type="submit" 
+          class="bg-ndtBlue hover:bg-indigo-950 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition-all shadow"
+        >
+          Apply Filters <i class="fa-solid fa-filter ml-1"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Count -->
+  <div class="mb-6 flex justify-between items-center">
+    <span class="text-sm font-semibold text-slate-500">
+      Found <span class="text-slate-800"><%= alumni.length %></span> profiles
+    </span>
+  </div>
+
+  <!-- Alumni Grid -->
+  <% if (alumni.length === 0) { %>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-12 text-center text-slate-500">
+      <i class="fa-solid fa-users-slash text-5xl mb-4 text-slate-300 block"></i>
+      <p class="font-bold text-lg">No alumni matched your search criteria.</p>
+      <p class="text-sm text-slate-400 mt-1">Try broadening your search query or removing filters.</p>
+      <a href="/directory" class="mt-4 inline-block bg-ndtBlue text-white font-bold py-2 px-6 rounded-lg text-sm hover:bg-indigo-950 transition-colors">
+        View All Alumni
+      </a>
+    </div>
+  <% } else { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% alumni.forEach(person => { %>
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow relative">
+          <!-- Status Banner for Admin visibility (pending approvals) -->
+          <% if (person.status === 'pending') { %>
+            <div class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded shadow-sm border border-yellow-200">
+              Pending Approval
+            </div>
+          <% } %>
+
+          <div class="p-6">
+            <!-- Top Section: Avatar & Basic Meta -->
+            <div class="flex items-start gap-4">
+              <!-- Profile Pic -->
+              <% if (person.profile_pic) { %>
+                <img 
+                  src="/uploads/<%= person.profile_pic %>" 
+                  alt="<%= person.name %>" 
+                  class="w-16 h-16 rounded-full object-cover border-2 border-slate-100 shadow-inner flex-shrink-0"
+                >
+              <% } else { %>
+                <div class="w-16 h-16 rounded-full bg-blue-50 border-2 border-slate-100 flex items-center justify-center font-bold text-2xl text-ndtBlue shadow-inner flex-shrink-0 uppercase">
+                  <%= person.name.charAt(0) %>
+                </div>
+              <% } %>
+
+              <!-- Name & Job Info -->
+              <div class="min-w-0">
+                <h3 class="font-extrabold text-slate-800 text-base truncate"><%= person.name %></h3>
+                <p class="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wider"><%= person.field_of_study %> Tech</p>
+                <% if (person.current_job) { %>
+                  <p class="text-xs text-slate-600 font-medium truncate">
+                    <i class="fa-solid fa-briefcase text-[10px] text-slate-400"></i> <%= person.current_job %>
+                    <% if (person.company) { %> at <span class="font-semibold"><%= person.company %></span><% } %>
+                  </p>
+                <% } else { %>
+                  <p class="text-xs text-slate-400 font-medium italic">Student / Not specified</p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Identity Badges: Batch, Serial, Card -->
+            <div class="mt-6 grid grid-cols-3 gap-2 border-t border-slate-50 pt-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-100">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Batch</span>
+                <span class="text-sm font-extrabold text-ndtBlue"><%= person.batch %></span>
+              </div>
+              <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-100">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Serial</span>
+                <span class="text-sm font-extrabold text-amber-700 truncate block px-0.5" title="<%= person.serial_number %>"><%= person.serial_number %></span>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-1.5 border border-slate-200">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Card No</span>
+                <span class="text-sm font-extrabold text-slate-700 truncate block px-0.5" title="<%= person.card_number || 'N/A' %>"><%= person.card_number || 'N/A' %></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-semibold">
+              <i class="fa-regular fa-clock"></i> Joined <%= new Date(person.created_at).toLocaleDateString() %>
+            </span>
+            <a 
+              href="/profile/<%= person.id %>" 
+              class="text-ndtLightBlue hover:text-ndtBlue font-bold text-xs flex items-center gap-1 transition-colors"
+            >
+              View Profile <i class="fa-solid fa-circle-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>
